@@ -34,9 +34,9 @@ capa_federal <- capa_federal %>%
 
 pop_fed <- paste0(
   "<b>", "<span style = 'font-size:11pt'>DISTRITO FEDERAL ", as.character(capa_federal$distrito), "</b></span>",     "<br></p>",
-  "<b>FUERZA Y CORAZÓN POR SONORA: </b><br>",capa_federal$fuerza_y_corazon_por_mexico, "<br></p>",
-  "<b>SIGAMOS HACIENDO HISTORIA: </b><br>",capa_federal$sigamos_haciendo_historia, "<br></p>",
-  "<b>", "MOVIMIENTO CIUDADANO   ", "</b><br>",   capa_federal$movimiento_ciudadano,"<br></p>"
+  "<b>FUERZA Y CORAZÓN POR SONORA:</b><br>",capa_federal$fuerza_y_corazon_por_mexico, "<br></p>",
+  "<b>SIGAMOS HACIENDO HISTORIA:</b><br>",capa_federal$sigamos_haciendo_historia, "<br></p>",
+  "<b>", "MOVIMIENTO CIUDADANO:", "</b><br>",   capa_federal$movimiento_ciudadano,"<br></p>"
 )  %>% lapply(htmltools::HTML)
 
 
