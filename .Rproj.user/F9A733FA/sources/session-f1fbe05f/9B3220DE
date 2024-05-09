@@ -3,9 +3,9 @@
     "path": "D:/lmoreno/OneDrive/R/Distritos/Distritos.R",
     "project_path": "Distritos.R",
     "type": "r_source",
-    "hash": "3551639777",
+    "hash": "0",
     "contents": "",
-    "dirty": false,
+    "dirty": true,
     "created": 1715187018797.0,
     "source_on_save": false,
     "relative_order": 1,
@@ -21,7 +21,7 @@
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1715284930990,
+    "last_content_update": 1715286627204,
     "read_only": false,
     "read_only_alternatives": []
 }
