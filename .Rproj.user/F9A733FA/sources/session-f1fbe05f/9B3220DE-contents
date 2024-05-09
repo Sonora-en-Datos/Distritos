@@ -33,7 +33,7 @@ capa_federal <- capa_federal %>%
   janitor::clean_names()
 
 pop_fed <- paste0(
-  "<b>", "DISTRITO FEDERAL", as.character(capa_federal$distrito), "</b>",     "<br></p>",
+  "<b>", "<span style = 'font-size:11pt'>DISTRITO FEDERAL ", as.character(capa_federal$distrito), "</b></span>",     "<br></p>",
   "<b>FUERZA Y CORAZÓN POR SONORA: </b><br>",capa_federal$fuerza_y_corazon_por_mexico, "<br></p>",
   "<b>SIGAMOS HACIENDO HISTORIA: </b><br>",capa_federal$sigamos_haciendo_historia, "<br></p>",
   "<b>", "MOVIMIENTO CIUDADANO   ", "</b><br>",   capa_federal$movimiento_ciudadano,"<br></p>"
@@ -78,7 +78,7 @@ capa_local <- capa_local %>%
 
 
 popup <- paste0(
-  "<b>", "DISTRITO ", as.character(capa_local$distrito_local), "</b>",     "<br></p>",
+  "<b>", "<span style = 'font-size:11pt'>DISTRITO ", as.character(capa_local$distrito_local), "</b></span>",     "<br></p>",
   "<b>", if_else(!is.na(capa_local$fuerza_y_cora_zo_n_por_sonora),paste0("FUERZA Y CORAZÓN POR SONORA: </b><br>",capa_local$fuerza_y_cora_zo_n_por_sonora, "<br></p>"),
                  if_else(!is.na(capa_local$pan_pri_prd),paste0("PAN, PRI, PRD: </b><br>",capa_local$pan_pri_prd, "<br></p>"),
                          paste0("PAN:</b><br>",capa_local$pan, "<br></p>
@@ -86,8 +86,8 @@ popup <- paste0(
                         <b>PRD:</b><br>",capa_local$prd, "<br></p>"))),
   "<b>", if_else(is.na(capa_local$morena),paste0("MORENA, PT, PVEM,NAS, PES: </b><br>",capa_local$morena_pt_pvem_nas_pes, "<br></p>"),
                  paste0("MORENA:</b><br>",capa_local$morena, "<br></p>")),
-  "<b>", "MOVIMIENTO CIUDADANO   ", "</b><br>",   capa_local$movimiento_ciudadano,"<br></p>",
-  "<b>", "PARTIDO SONORENSE", "</b><br>",   capa_local$partido_sonorense,  "<br></p>"
+  "<b>", "MOVIMIENTO CIUDADANO:", "</b><br>",   capa_local$movimiento_ciudadano,"<br></p>",
+  "<b>", "PARTIDO SONORENSE:", "</b><br>",   capa_local$partido_sonorense,  "<br></p>"
 )  %>% lapply(htmltools::HTML)
 
 mapa_distritos <- leaflet(capa_local) %>% 
