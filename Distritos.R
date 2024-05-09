@@ -98,13 +98,13 @@ mapa_distritos <- leaflet(capa_local) %>%
               opacity=1,
               fillColor = capa_local$fill_color,
               color= capa_local$fill_color,
-              fillOpacity = 0.3,
+              fillOpacity = 0.1,
               smoothFactor = 0.5,
               highlightOptions = highlightOptions(color = "black", 
                                                   weight = 1,
                                                   bringToFront = FALSE,
                                                   #fillColor=capa_local$fill_color,
-                                                  fillOpacity = 0.7),
+                                                  fillOpacity = 0.3),
               group = 'DISTRITOS LOCALES',
 #              label=label,
               popup = popup,
@@ -133,13 +133,13 @@ mapa_distritos <- leaflet(capa_local) %>%
               opacity=1,
               fillColor = capa_federal$fill_color,
               color= capa_federal$fill_color,
-              fillOpacity = 0.3,
+              fillOpacity = 0.1,
               smoothFactor = 0.5,
               highlightOptions = highlightOptions(color = "black", 
                                                   weight = 1,
                                                   bringToFront = FALSE,
                                                   #fillColor=capa_federal$fill_color,
-                                                  fillOpacity = 0.7),
+                                                  fillOpacity = 0.3),
               group = 'DISTRITOS FEDERALES',
               #              label=label,
               popup = pop_fed,
@@ -177,5 +177,5 @@ mapa_distritos <- leaflet(capa_local) %>%
   leaflet.extras::addSearchOSM()
 
 mapa_distritos
-saveWidget(mapa_distritos,"index.html",  title= "Distritos 2023 - Sonora en Datos",selfcontained = F, libdir = "lib")
+saveWidget(mapa_distritos,"docs/index.html",  title= "Distritos 2023 - Sonora en Datos",selfcontained = F, libdir = "lib")
 
