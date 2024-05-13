@@ -289,13 +289,13 @@ mapa_distritos <- leaflet(capa_local) %>%
   #                                                                           firstTipSubmit = TRUE,
   #                                                                           autoCollapse = TRUE, hideMarkerOnCollapse = TRUE)) %>% 
   addLogo("https://www.luisarmandomoreno.com/wp-content/uploads/2022/05/SEDfesp.png",
-          src= "remote", position = "topright", url = "https://www.sonoraendatos.com/",
-          width = 100,
-          height = 90)  %>% 
+          src= "remote", position = "bottomleft", url = "https://www.sonoraendatos.com/",
+          width = 80,
+          height = 72)  %>% 
   leaflet.extras::addSearchOSM() %>%
   addLayersControl(
     baseGroups = c("DISTRITOS FEDERALES","DISTRITOS LOCALES", "AYUNTAMIENTOS"),
-    position = c("topleft"),
+    position = c("topright"),
     options = layersControlOptions(collapsed = FALSE)
   ) %>% 
   htmlwidgets::onRender(paste0("
