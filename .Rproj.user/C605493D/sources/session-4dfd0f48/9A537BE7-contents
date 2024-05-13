@@ -119,8 +119,10 @@ pop_mun <- paste0(
                          paste0("PAN:</b><br>",capa_municipios$pan, "<br></p>
                         <b>PRI:</b><br>",capa_municipios$pri, "<br></p>
                         <b>PRD:</b><br>",capa_municipios$prd, "<br></p>"))),
-  "<b>", if_else(!is.na(capa_municipios$morena_pt_pvem_nas_pes),paste0("MORENA, PT, PVEM,NAS, PES: </b><br>",capa_municipios$morena_pt_pvem_nas_pes, "<br></p>"),
-                 paste0("MORENA:</b><br>",capa_municipios$morena, "<br></p>")),
+   if_else(!is.na(capa_municipios$morena_pt_pvem_nas_pes),paste0("<b>MORENA, PT, PVEM,NAS, PES: </b><br>",capa_municipios$morena_pt_pvem_nas_pes, "<br></p>"),
+                 ""),
+  if_else(!is.na(capa_municipios$morena),paste0("<b>MORENA: </b><br>",capa_municipios$morena_pt_pvem_nas_pes, "<br></p>"),
+          ""),
   if_else(!is.na(capa_municipios$pt),paste0("<b>PT: </b><br>",capa_municipios$pt, "<br></p>"),
                  ""),
    if_else(!is.na(capa_municipios$pvem),paste0("<b>PVEM: </b><br>",capa_municipios$pvem, "<br></p>"),
@@ -129,7 +131,8 @@ pop_mun <- paste0(
                  ""),
  if_else(!is.na(capa_municipios$pes),paste0("<b>PES: </b><br>",capa_municipios$pes, "<br></p>"),
                  ""),
-  "<b>", "MOVIMIENTO CIUDADANO:", "</b><br>",   capa_municipios$movimiento_ciudadano,"<br></p>",
+ if_else(!is.na(capa_municipios$movimiento_ciudadano),paste0("<b>MOVIMIENTO CIUDADANO: </b><br>",capa_municipios$movimiento_ciudadano, "<br></p>"),
+         ""),
  if_else(!is.na(capa_municipios$partido_sonorense),paste0("<b>PARTIDO SONORENSE: </b><br>",capa_municipios$partido_sonorense, "<br></p>"),
          ""),
 if_else(!is.na(capa_municipios$independiente_a),paste0("<b>INDEPENDIENTE: </b><br>",capa_municipios$independiente_a, "<br></p>"),
