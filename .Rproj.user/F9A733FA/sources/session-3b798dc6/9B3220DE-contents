@@ -285,23 +285,28 @@ mapa_distritos <- leaflet(capa_local) %>%
               #                               "border-color" = "rgba(0,0,0,0.5)"
               #                                          ))
   ) %>% 
+  htmlwidgets::onRender("
+        function() {
+            $('.leaflet-control-layers-list').prepend('<label style=\"text-align:left\"><b>SELECCIONAR CAPA</b></label>');
+        }
+    ") %>% 
   # addSearchFeatures(targetGroups= 'DI', options = searchFeaturesOptions(zoom=13, openPopup=TRUE,moveToLocation=TRUE,
   #                                                                           firstTipSubmit = TRUE,
   #                                                                           autoCollapse = TRUE, hideMarkerOnCollapse = TRUE)) %>% 
   addLogo("https://www.luisarmandomoreno.com/wp-content/uploads/2022/05/SEDfesp.png",
-          src= "remote", position = "bottomleft", url = "https://www.sonoraendatos.com/",
+          src= "remote", position = "topright", url = "https://www.sonoraendatos.com/",
           width = 80,
           height = 72)  %>% 
   leaflet.extras::addSearchOSM() %>%
   addLayersControl(
     baseGroups = c("DISTRITOS FEDERALES","DISTRITOS LOCALES", "AYUNTAMIENTOS"),
-    position = c("topright"),
+    position = c("bottomleft"),
     options = layersControlOptions(collapsed = FALSE)
   ) %>% 
   htmlwidgets::onRender(paste0("
     function(el, x) {
       $('head').append(",responsiveness,");
-    }"))
+    }")) 
 
 
 mapa_distritos
