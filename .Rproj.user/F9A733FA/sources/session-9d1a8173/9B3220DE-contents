@@ -91,7 +91,7 @@ popup <- paste0(
 )  %>% lapply(htmltools::HTML)
 
 mapa_distritos <- leaflet(capa_local) %>% 
-  addProviderTiles(providers$CartoDB.Positron) %>%
+  addProviderTiles(providers$CartoDB.VoyagerLabelsUnder) %>%
   addPolygons(data= capa_local,
               stroke= TRUE,
               weight=0.5,                   

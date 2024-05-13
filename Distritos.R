@@ -168,13 +168,13 @@ mapa_distritos <- leaflet(capa_local) %>%
   addLogo("https://www.luisarmandomoreno.com/wp-content/uploads/2022/05/SEDfesp.png",
           src= "remote", position = "topright", url = "https://www.sonoraendatos.com/",
           width = 100,
-          height = 90) %>% 
+          height = 90)  %>% 
+  leaflet.extras::addSearchOSM() %>%
   addLayersControl(
     baseGroups = c("DISTRITOS LOCALES", "DISTRITOS FEDERALES"),
     position = c("topleft"),
     options = layersControlOptions(collapsed = FALSE)
-  )%>% 
-  leaflet.extras::addSearchOSM()
+  )
 
 mapa_distritos
 saveWidget(mapa_distritos,"docs/index.html",  title= "Distritos 2023 - Sonora en Datos",selfcontained = F, libdir = "lib")
