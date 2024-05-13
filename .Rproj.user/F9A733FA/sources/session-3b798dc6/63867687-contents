@@ -1,0 +1,168 @@
+library(tidyverse)
+library(extrafont)
+library(scales)
+library(plotly)
+library(htmlwidgets)
+library(showtext)
+library(tint)
+library(rgdal)
+library(rgeos)
+library(miniUI)
+library(zoo)
+library(leaflet)
+library("Cairo")
+library(htmltools)
+library(factoextra)
+library(broom)
+library(leaflet.extras)
+library(leafem)
+
+temaejes <- theme(axis.line = element_line(linetype = "solid"), plot.margin = margin(10, 25, 10, 25),
+                  plot.title = element_text(family = "Segoe UI Black", size = 15),  
+                  plot.subtitle = element_text(family = "Segoe UI Light", size = 10, color = "black"), legend.title = element_blank(),
+                  strip.text = element_text(family = "Segoe UI Black", size = 10),
+                  axis.text = element_text(family = "Segoe UI", size =6),
+                  plot.background = element_rect(fill = "white", color = "white", size = 1),
+                  axis.title.x = element_text(family = "Segoe UI Light", size = 8, hjust=1),
+                  axis.title.y = element_text(family = "Segoe UI Light", size = 8, hjust=1), 
+                  plot.caption = element_text(family = "Segoe UI", size = 6),
+                  legend.text = element_blank(),
+                  legend.position = "none", plot.title.position = 'plot', plot.caption.position = 'plot')
+
+
+
+censoagebsonora <- read_csv("datos/censoagebsonora.csv", 
+                            col_types = cols(POBTOT = col_double(),
+                                             POBFEM = col_double(),
+                                             POBMAS = col_double(),
+                                             GRAPROES = col_double(),
+                                             PSINDER = col_double(),
+                                             PAFIL_IPRIV = col_double(),
+                                             TOTHOG = col_double(),
+                                             HOGJEF_F = col_double(),
+                                             TVIVPAR = col_double(),
+                                             VIVPAR_HAB = col_double(),
+                                             PRO_OCUP_C = col_double(),
+                                             P_15YMAS = col_double(),
+                                             P_18YMAS = col_double(),
+                                             P_60YMAS = col_double(),
+                                             VPH_INTER = col_double()))
+censoagebsonora [is.na(censoagebsonora)] <- 0
+hmomza <- censoagebsonora %>% 
+  select(ENTIDAD,NOM_ENT,MUN,NOM_MUN,LOC,NOM_LOC,AGEB,MZA, POBTOT, GRAPROES,POBFEM,POBMAS, P_15YMAS, P_18YMAS, P_60YMAS, PSINDER, PAFIL_IPRIV,TOTHOG, HOGJEF_F,TVIVPAR,VIVPAR_HAB,PRO_OCUP_C,VPH_INTER) %>% 
+  unite(CVEGEO,c(ENTIDAD,MUN,LOC,AGEB,MZA),  sep = "", remove = TRUE) %>% mutate(CVEGEO= as.character(CVEGEO)) %>% 
+  filter (NOM_LOC=="Hermosillo")
+hmomza [is.na(hmomza )] <- 0 
+hmomza <- hmomza %>% filter(POBTOT!=0) %>% filter (VIVPAR_HAB !=0) %>% mutate(SUMGRA=GRAPROES*P_15YMAS)
+
+write.csv(hmomza, "paracol.csv")
+
+
+manzanacolonia <- read_csv("manzanacolonia.csv", 
+                           col_types = cols(CVEGEO = col_character(),
+                                            CVE_LOC = col_character(),
+                                            CONTROL = col_character())) %>% select(CVE_LOC,NOMBRE,VIVPAR_HAB, POBTOT, POBMAS, POBFEM, SUMGRA,P_15YMAS,P_18YMAS,P_60YMAS) %>% 
+  filter(!is.na(NOMBRE))
+manzanacolonia [is.na(manzanacolonia )] <- 0
+
+colonias <- manzanacolonia %>% group_by(CVE_LOC,NOMBRE) %>% summarise(VIVPAR=sum(VIVPAR_HAB),
+                                                                   POBTOT= sum(POBTOT), 
+                                                                   POBMAS= sum(POBMAS), 
+                                                                   POBFEM= sum(POBFEM), 
+                                                                   SUMGRA= sum(SUMGRA),
+                                                                   P_15YMAS= sum(P_15YMAS),
+                                                                   P_18YMAS= sum(P_18YMAS),
+                                                                   P_60YMAS= sum(P_60YMAS))
+colonias [is.na(colonias)] <- 0
+
+colonias<- colonias %>% mutate(GRAPROESCOLES=SUMGRA/P_15YMAS)
+
+colonias [is.na(colonias)] <- 0
+colonias<- colonias %>% filter(VIVPAR!=0)
+write.csv(colonias, "paracol2.csv")
+
+
+capa_col<- readOGR("shapes", layer="coloniahillo2307",  encoding = "UTF-8", use_iconv=TRUE)
+
+capa_col@data <- capa_col@data %>% mutate(VIVPAR=as.numeric(VIVPAR), POBTOT=as.numeric(POBTOT),POBMAS=as.numeric(POBMAS),POBFEM=as.numeric(POBFEM),P_15YMAS=as.numeric(P_15YMAS),P_18YMAS=as.numeric(P_18YMAS),
+                                          P_60YMAS=as.numeric(P_60YMAS),GRAPROESCOLES=as.numeric(GRAPROESCO) )
+capa_col@data <- capa_col@data %>% mutate(mujeres=round(POBFEM*100/POBTOT), hombres=round(POBMAS*100/POBTOT),
+                                mas60=round(P_60YMAS*100/POBTOT), mas18=round(P_18YMAS*100/POBTOT),
+                                POBTOT= prettyNum(POBTOT, big.mark=",",scientific=FALSE),
+                                 VIVPAR= prettyNum(VIVPAR, big.mark=",",scientific=FALSE))
+
+#capa_col@data <- capa_col@data %>% mutate(mujeres=round(POBFEM*100/POBTOT), hombres=round(POBMAS*100/POBTOT), 
+#mas60=round(P_60YMAS*100/POBTOT), mas18=round(P_18YMAS*100/POBTOT))
+
+popup <- paste0(
+  "<b>", "COL. ", as.character(capa_col$NOMBRE), "</b>",     "<br>",
+  "<b>", "  Viviendas particulares habitadas:   ", "</b>",   capa_col$VIVPAR,      "<br>",
+  "<b>", "  Población total:   ",           "</b>",   capa_col$POBTOT,      "<br>",
+  "<b>", "  Mujeres:   ",           "</b>",   as.character(capa_col$mujeres),"%",      "<br>",
+  "<b>", "  Hombres:   ",           "</b>",   as.character(capa_col$hombres), "%",      "<br>",
+  "<b>", "  Menos de 18 años:   ",           "</b>",   100-capa_col$mas18 ,"%",       "<br>",
+  "<b>", "  18-59 años:   ",           "</b>",   capa_col$mas18-capa_col$mas60 ,"%",       "<br>", 
+  "<b>", "  60 y más años:   ",           "</b>",   capa_col$mas60, "%",      "<br>",
+  "<b>", "  Escolaridad promedio:   ",           "</b>",   as.character(round(capa_col$GRAPROESCOLES,1)), " años",     "<br>",
+  "<b>","luisarmandomoreno.com",           "</b>")  %>% lapply(htmltools::HTML)
+label <- capa_col$NOMBRE
+
+
+
+mapahmocol <- leaflet(capa_col) %>% 
+  addProviderTiles(providers$CartoDB.Voyager) %>%
+  addPolygons(data= capa_col,
+              stroke= TRUE,
+              weight=0.5,                   
+              opacity=1,
+              fillColor = "transparent",
+              color= "black",
+              fillOpacity = 1,
+              smoothFactor = 0.5,
+              highlightOptions = highlightOptions(color = "#01787E", 
+                                                  weight = 1.5,
+                                                  bringToFront = TRUE,
+                                                  fillColor="#01787E",
+                                                  fillOpacity = 0.3),
+              group = 'NOMBRE',
+              label=label,
+              popup = popup,
+              popupOptions = labelOptions(noHide = F, direction = "auto",  closeOnClick = TRUE, 
+                                          style = list(
+                                            "color" = "black",
+                                            "font-family" = "Arial",
+                                            "font-style" = "regular",
+                                            "box-shadow" = "2px 2px rgba(0,0,0,0.25)",
+                                            "font-size" = "8px",
+                                            "border-color" = "rgba(0,0,0,0.5)"
+                                          )),
+              labelOptions = labelOptions(noHide = F, direction = "auto", offset = c(12, 0), opacity=0.9,
+                                          style = list(
+                                            "color" = "black",
+                                            "font-family" = "Arial",
+                                            "font-style" = "regular",
+                                            "box-shadow" = "2px 2px rgba(0,0,0,0.25)",
+                                            "font-size" = "14px",
+                                            "border-color" = "rgba(0,0,0,0.5)"
+                                          ))) %>% 
+  addSearchFeatures(targetGroups= 'NOMBRE', options = searchFeaturesOptions(zoom=13, openPopup=TRUE,moveToLocation=TRUE,
+                                                                            firstTipSubmit = TRUE,
+                                                                            autoCollapse = TRUE, hideMarkerOnCollapse = TRUE)) %>% 
+  addLogo("https://www.luisarmandomoreno.com/wp-content/uploads/2022/05/SEDfesp.png",
+          src= "remote", position = "topright", url = "https://www.luisarmandomoreno.com/",
+          width = 100,
+          height = 90)
+
+mapahmocol
+saveWidget(mapahmocol,"hmocolonias.html",  title= "Colonias de Hermosillo - Sonora en Datos",selfcontained = T, libdir = "lib")
+
+
+  coloniahmo <- capa_col@data %>% mutate(menos18=100-mas18, P_MENOS18=POBTOT-P_18YMAS, 
+                                       RAZON=POBFEM/POBMAS, HABSVIV=POBTOT/VIVPAR) %>% mutate(menos18=100-mas18) %>% 
+  select(NOMBRE, POBTOT, VIVPAR, POBMAS,POBFEM, P_18YMAS, P_60YMAS, GRAPROESCOLES, mujeres, hombres, mas60, 
+         mas18, menos18, P_MENOS18, RAZON,HABSVIV) %>% filter(POBTOT>=100)
+
+menos18 <- coloniahmo %>% select(NOMBRE,POBTOT,VIVPAR, HABSVIV) %>%  top_n(5, POBTOT)
+
+GRAPROESCOLES <- coloniahmo %>% select(NOMBRE,POBTOT,GRAPROESCOLES) %>%  top_n(-5, GRAPROESCOLES)
+
