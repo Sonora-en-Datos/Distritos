@@ -8,7 +8,8 @@ library(leaflet.extras)
 library(leafem)
 library(leaflet)
 
-
+# create the string for responsiveness that will be injected in the <head> section of the leaflet output html file. Note that the quotes were escaped using the backslash character : `\`.  
+responsiveness = "\'<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\'"
 
 capa_federal <- st_read("shape/DISTRITO_FEDERAL.shp", quiet = TRUE) %>% 
   st_transform('+proj=longlat +datum=WGS84')
@@ -174,8 +175,18 @@ mapa_distritos <- leaflet(capa_local) %>%
     baseGroups = c("DISTRITOS LOCALES", "DISTRITOS FEDERALES"),
     position = c("topleft"),
     options = layersControlOptions(collapsed = FALSE)
-  )
+  ) %>% 
+  htmlwidgets::onRender(paste0("
+    function(el, x) {
+      $('head').append(",responsiveness,");
+    }"))
+
 
 mapa_distritos
-saveWidget(mapa_distritos,"docs/index.html",  title= "Distritos 2023 - Sonora en Datos",selfcontained = F, libdir = "lib")
+
+
+
+# add the javascript for responsivness
+
+saveWidget(mapa_distritos,"docs/index.html",  title= "Distritos 2023 - Sonora en Datos",selfcontained = T)
 
